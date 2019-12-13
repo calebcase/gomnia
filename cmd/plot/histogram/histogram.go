@@ -25,7 +25,7 @@ var (
 	Format  string = "ascii"
 	Variant string = "default"
 
-	Width  float64 = 20
+	Width  float64 = 40
 	Height float64 = 20
 )
 
@@ -37,7 +37,7 @@ func init() {
 	flags.StringVarP(&Format, "format", "f", Format, "output format [ascii, eps, jpg, jpeg, pdf, png, svg, tif, tiff]")
 	flags.StringVar(&Variant, "variant", Variant, "variant")
 
-	flags.Float64Var(&Width, "width", Width, "width in lines/centimeters")
+	flags.Float64VarP(&Width, "width", "w", Width, "width in lines/centimeters")
 	flags.Float64Var(&Height, "height", Height, "height in characters/centimeters")
 }
 
@@ -104,7 +104,7 @@ https://en.wikipedia.org/wiki/Histogram`,
 				w := tabwriter.NewWriter(of, 0, 0, 1, ' ', 0)
 
 				for _, point := range centroids {
-					fmt.Fprintf(w, "%g\t:\t%s %.0f\n", point.X, renderHBar(rescale(point.Y, floats.Min(ys), floats.Max(ys), 0, 40), true), point.Y)
+					fmt.Fprintf(w, "%g\t:\t%s %.0f\n", point.X, renderHBar(rescale(point.Y, floats.Min(ys), floats.Max(ys), 0, Width), true), point.Y)
 				}
 
 				w.Flush()
@@ -116,7 +116,11 @@ https://en.wikipedia.org/wiki/Histogram`,
 				}
 				vbars = append(vbars, 0, 0, 0, 0, 0)
 
-				fmt.Fprintln(of, asciigraph.Plot(vbars, asciigraph.Height(int(Height))))
+				if flags.Changed("width") {
+					fmt.Fprintln(of, asciigraph.Plot(vbars, asciigraph.Height(int(Height)), asciigraph.Width(int(Width))))
+				} else {
+					fmt.Fprintln(of, asciigraph.Plot(vbars, asciigraph.Height(int(Height))))
+				}
 			default:
 				err = errors.New("invalid variant specified")
 				return
