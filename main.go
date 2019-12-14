@@ -1,3 +1,4 @@
+// Use numerical and scientific algorithms from the terminal.
 package main
 
 import (

@@ -1,3 +1,4 @@
+//  Package truncted provides a probability distribution truncater.
 package truncated
 
 import (
@@ -12,6 +13,10 @@ type TruncatableDistribution interface {
 	Quantile(p float64) float64
 }
 
+// Truncated transforms a distribution by truncating the output between minimum
+// and maximum values.
+//
+// Truncated follows the method described in
 // https://www.jstatsoft.org/article/view/v016c02/v16c02.pdf
 type Truncated struct {
 	Distribution TruncatableDistribution
@@ -21,45 +26,48 @@ type Truncated struct {
 
 	Src rand.Source
 
-	cdfMin *float64
-	cdfMax *float64
+	cdfMin   float64
+	cdfMax   float64
+	cdfRange float64
 }
 
-func (t *Truncated) cache() {
-	if t.cdfMin == nil {
-		cdfMin := t.Distribution.CDF(t.Min)
-		t.cdfMin = &cdfMin
+var _ distuv.Rander = Truncated{}
+var _ distuv.Quantiler = Truncated{}
+
+// New constructs a new truncted distribution with a minimum and maximum range.
+func New(dist TruncatableDistribution, min, max float64, src rand.Source) (t Truncated) {
+	t = Truncated{
+		Distribution: dist,
+
+		Min: min,
+		Max: max,
+
+		Src: src,
+
+		cdfMin: dist.CDF(min),
+		cdfMax: dist.CDF(max),
 	}
 
-	if t.cdfMax == nil {
-		cdfMax := t.Distribution.CDF(t.Max)
-		t.cdfMax = &cdfMax
-	}
+	t.cdfRange = t.cdfMax - t.cdfMin
+
+	return
 }
 
+// CDF computes the value of the cumulative density function at x.
 func (t Truncated) CDF(x float64) float64 {
-	t.cache()
-
 	cdfMaxMin := t.Distribution.CDF(math.Max(math.Min(x, t.Max), t.Min))
 
-	cdfMin := *t.cdfMin
-	cdfMax := *t.cdfMax
-
-	return (cdfMaxMin - cdfMax) / (cdfMax - cdfMin)
+	return (cdfMaxMin - t.cdfMax) / t.cdfRange
 }
 
+// Quantile returns the inverse of the cumulative probability distribution.
 func (t Truncated) Quantile(p float64) float64 {
-	t.cache()
-
-	cdfMin := *t.cdfMin
-	cdfMax := *t.cdfMax
-
-	return t.Distribution.Quantile(cdfMin + p*(cdfMax-cdfMin))
+	return t.Distribution.Quantile(t.cdfMin + p*t.cdfRange)
 }
 
+// Rand returns a random sample drawn from the embedded distribution truncated
+// to minimum and maximum values.
 func (t Truncated) Rand() float64 {
-	t.cache()
-
 	p := distuv.Uniform{
 		Min: 0,
 		Max: 1,
