@@ -2,7 +2,7 @@
 
 # Gomnia
 
-[![Documentation](https://godoc.org/github.com/calebcase/gomnia?status.svg)](http://godoc.org/github.com/calebcase/gomnia)
+[![Documentation][gomnia-godoc-svg]][gomnia-godoc]
 
 Gomnia is a CLI tool designed to make using numerical and scientific algorithms
 from the terminal productive and performant.
@@ -12,6 +12,15 @@ The tool prioritizes:
 * Streaming/online versions of algorithms
 * Reading from stdin and writing to stdout
 * Defaulting to human readable i/o
+* Using existing libraries
+
+Gomnia aims to expose functionality normally only available from within a
+specific language/runtime/library to the terminal (e.g. Octave, Matlab, R,
+Scipy, Gonum, GSL, etc). Where possible it will use existing libraries to
+fulfill that mission.
+
+In particular, since Gomnia is written in Go it largely exposes functionality
+found in [Gonum][gonum].
 
 ## Install
 
@@ -102,3 +111,9 @@ $ gomnia summarize histogram < filesizes.txt | gomnia plot histogram --variant v
   2243 ┤                ╭──╮│  ││  ││  ││  ││  ││  │     
      0 ┼────────────────╯  ╰╯  ╰╯  ╰╯  ╰╯  ╰╯  ╰╯  ╰──── 
 ```
+
+---
+
+[gomnia-godoc-svg]: https://godoc.org/github.com/calebcase/gomnia?status.svg
+[gomnia-godoc]: https://godoc.org/github.com/calebcase/gomnia
+[gonum]: https://github.com/gonum/gonum
