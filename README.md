@@ -2,6 +2,8 @@
 
 # Gomnia
 
+[![Documentation](https://godoc.org/github.com/calebcase/gomnia?status.svg)](http://godoc.org/github.com/calebcase/gomnia)
+
 Gomnia is a CLI tool designed to make using numerical and scientific algorithms
 from the terminal productive and performant.
 
