@@ -9,8 +9,10 @@ import (
 )
 
 type TruncatableDistribution interface {
+	distuv.Rander
+	distuv.Quantiler
+
 	CDF(x float64) float64
-	Quantile(p float64) float64
 }
 
 // Truncated transforms a distribution by truncating the output between minimum
