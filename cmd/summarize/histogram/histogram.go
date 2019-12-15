@@ -2,6 +2,7 @@ package histogram
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -51,6 +52,10 @@ https://en.wikipedia.org/wiki/Histogram`,
 		err = scanner.Err()
 		if err != nil {
 			return
+		}
+
+		if len(vs) == 0 {
+			return errors.New("No input values found.")
 		}
 
 		sort.Float64s(vs)

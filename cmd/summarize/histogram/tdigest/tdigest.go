@@ -2,6 +2,7 @@ package tdigest
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -60,6 +61,10 @@ https://github.com/tdunning/t-digest/blob/master/docs/t-digest-paper/histo.pdf`,
 
 			return true
 		})
+
+		if len(means) == 0 {
+			return errors.New("No input values found.")
+		}
 
 		dividers := histogram.Fence(means)
 		hist := stat.Histogram(nil, dividers, means, counts)
