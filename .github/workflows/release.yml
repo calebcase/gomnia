@@ -1,0 +1,63 @@
+on:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - 'v*'
+    paths-ignore:
+      - 'README.md'
+name: 'release'
+jobs:
+  build:
+    strategy:
+      matrix:
+        go-version:
+          - '1.13.x'
+        platform:
+          - 'ubuntu-latest'
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: 'Install Go'
+        uses: 'actions/setup-go@v1'
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: 'Setup Environment'
+        shell: 'bash'
+        run: |
+          echo "::set-env name=GOPATH::$(go env GOPATH)"
+          echo "::add-path::$(go env GOPATH)/bin"
+          git config --global core.autocrlf false
+      - name: 'Install Optimizer'
+        shell: 'bash'
+        run: |
+          sudo apt-get install -qy upx
+      - name: 'Install Releaser'
+        shell: 'bash'
+        run: |
+          git clone https://github.com/goreleaser/goreleaser -b v0.123.3
+          cd goreleaser
+          go install
+      - name: 'Install Versioner'
+        shell: 'bash'
+        run: |
+          git clone https://github.com/calebcase/version -b v0.1.11
+          cd version
+          go install
+      - name: 'Checkout code'
+        uses: 'actions/checkout@v2'
+        with:
+          fetch-depth: 0
+      - name: 'Tag'
+        shell: 'bash'
+        run: |
+          git config --global user.email 'actions@github.com'
+          git config --global user.name 'GitHub Actions'
+
+          name="v$(version file)"
+          git tag -a "$name" -m ''
+      - name: 'Release'
+        shell: 'bash'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          goreleaser
