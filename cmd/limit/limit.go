@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 
 	"github.com/spf13/cobra"
 
@@ -24,6 +26,13 @@ var (
 		Short: "read stdin and copy to stdout until one of the limits are reached",
 		Long:  "Read stdin and copy to stdout until one of the limits are reached.",
 		RunE: func(command *cobra.Command, args []string) (err error) {
+			signal.Ignore(syscall.SIGPIPE)
+			defer func() {
+				if errors.Is(err, syscall.EPIPE) {
+					err = nil
+				}
+			}()
+
 			var minP, maxP, sumP, countP bool
 
 			rf := command.PersistentFlags()
@@ -65,7 +74,10 @@ var (
 					}
 				}
 
-				fmt.Printf("%g\n", v)
+				_, err = fmt.Printf("%g\n", v)
+				if err != nil {
+					return
+				}
 
 				if countP {
 					count += 1

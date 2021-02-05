@@ -12,8 +12,8 @@ var (
 
 	Cmd = &cobra.Command{
 		Use:   "bernoulli",
-		Short: "generate samples from the bernoulli distribution",
-		Long: `Generate samples from the bernoulli distribution.
+		Short: "generate samples from the Bernoulli distribution",
+		Long: `Generate samples from the Bernoulli distribution.
 
 .  p=0.5        p=0.1        p=0.8
 0  ██████████▏  ██████████▏  ██▌
