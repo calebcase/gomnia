@@ -12,21 +12,20 @@ jobs:
     strategy:
       matrix:
         go-version:
-          - '1.13.x'
+          - '1.16.x'
         platform:
           - 'ubuntu-latest'
     runs-on: ${{ matrix.platform }}
     steps:
       - name: 'Install Go'
-        uses: 'actions/setup-go@v1'
+        uses: 'actions/setup-go@v2'
         with:
           go-version: ${{ matrix.go-version }}
       - name: 'Setup Environment'
         shell: 'bash'
         run: |
-          echo "::set-env name=GOPATH::$(go env GOPATH)"
-          echo "::add-path::$(go env GOPATH)/bin"
           git config --global core.autocrlf false
+          echo 'GO111MODULE=on' >> $GITHUB_ENV
       - name: 'Install Optimizer'
         shell: 'bash'
         run: |
@@ -34,13 +33,13 @@ jobs:
       - name: 'Install Releaser'
         shell: 'bash'
         run: |
-          git clone https://github.com/goreleaser/goreleaser -b v0.123.3
+          git clone https://github.com/goreleaser/goreleaser -b v0.159.0
           cd goreleaser
           go install
       - name: 'Install Versioner'
         shell: 'bash'
         run: |
-          git clone https://github.com/calebcase/version -b v0.1.11
+          git clone https://github.com/calebcase/version -b v0.1.13
           cd version
           go install
       - name: 'Checkout code'
