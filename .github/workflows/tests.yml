@@ -13,7 +13,8 @@ jobs:
     strategy:
       matrix:
         go-version:
-          - '1.13.x'
+          - '1.15.x'
+          - '1.16.x'
         platform:
           - 'ubuntu-latest'
           - 'macos-latest'
@@ -21,19 +22,18 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: 'Install Go'
-        uses: 'actions/setup-go@v1'
+        uses: 'actions/setup-go@v2'
         with:
           go-version: ${{ matrix.go-version }}
       - name: 'Setup Environment'
         shell: 'bash'
         run: |
-          echo "::set-env name=GOPATH::$(go env GOPATH)"
-          echo "::add-path::$(go env GOPATH)/bin"
           git config --global core.autocrlf false
+          echo 'GO111MODULE=on' >> $GITHUB_ENV
       - name: 'Install Linter'
         shell: 'bash'
         run: |
-          git clone https://github.com/golangci/golangci-lint -b v1.21.0
+          git clone https://github.com/golangci/golangci-lint -b v1.38.0
           cd golangci-lint/cmd/golangci-lint
           go install
       - name: 'Checkout code'
