@@ -1,7 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-
-cwd="${BASH_SOURCE%/*}"
-cd "$cwd"/../dist
-
-upx */* |& tee -a optimize.log

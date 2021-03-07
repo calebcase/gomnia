@@ -26,10 +26,6 @@ jobs:
         run: |
           git config --global core.autocrlf false
           echo 'GO111MODULE=on' >> $GITHUB_ENV
-      - name: 'Install Optimizer'
-        shell: 'bash'
-        run: |
-          sudo apt-get install -qy upx
       - name: 'Install Releaser'
         shell: 'bash'
         run: |
